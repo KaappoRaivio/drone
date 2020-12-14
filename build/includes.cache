@@ -1,0 +1,27 @@
+[
+  {
+    "Sourcefile": null,
+    "Include": "",
+    "Includepath": "/home/kaappo/Downloads/arduino-1.8.13/hardware/arduino/avr/cores/arduino"
+  },
+  {
+    "Sourcefile": null,
+    "Include": "",
+    "Includepath": "/home/kaappo/Downloads/arduino-1.8.13/hardware/arduino/avr/variants/standard"
+  },
+  {
+    "Sourcefile": "/home/kaappo/git/drone/build/sketch/BitMatrix.cpp.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kaappo/git/drone/build/sketch/Button.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kaappo/git/drone/build/sketch/Led.cpp",
+    "Include": "",
+    "Includepath": null
+  }
+]

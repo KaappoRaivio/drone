@@ -1,0 +1,44 @@
+#include "Button.h"
+#include "Led.h"
+#include "BitMatrix.h"
+
+/*Button button1(5);
+Led led1(8);
+Led led2(9);
+Led led3(10);
+Led led4(11);*/
+
+Led leds[] = {
+  Led(6),
+  Led(7),
+  Led(8),
+  Led(9),
+  Led(10),
+  Led(11),
+  Led(12),
+};
+
+BitMatrix matrix1(leds, 7);
+
+int value = 0;
+
+void setup() {
+  Serial.begin(9600);
+}
+
+bool prevState = false;
+
+void loop() {
+  // value += 1;
+  if (value == 0) {
+    value = 255;
+  } else {
+    value = 0;
+  }
+
+  //matrix1.set(value);
+  matrix1.set(value);
+  delay(100);
+  Serial.println(value);
+  //matrix1.set(value);
+}
