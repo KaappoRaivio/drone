@@ -23,5 +23,10 @@
     "Sourcefile": "/home/kaappo/git/drone/build/sketch/Led.cpp",
     "Include": "",
     "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kaappo/git/drone/build/sketch/MySerialReader.cpp",
+    "Include": "",
+    "Includepath": null
   }
 ]
