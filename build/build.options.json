@@ -1,5 +1,5 @@
 {
-  "additionalFiles": "..,..,..,..,..,..,..,..",
+  "additionalFiles": "..,..",
   "builtInLibrariesFolders": "/home/kaappo/Downloads/arduino-1.8.13/libraries",
   "builtInToolsFolders": "/home/kaappo/Downloads/arduino-1.8.13/tools-builder,/home/kaappo/Downloads/arduino-1.8.13/hardware/tools/avr",
   "compiler.optimization_flags": "",
@@ -8,5 +8,5 @@
   "hardwareFolders": "/home/kaappo/Downloads/arduino-1.8.13/hardware",
   "otherLibrariesFolders": "/home/kaappo/Arduino/libraries",
   "runtime.ide.version": "10813",
-  "sketchLocation": "/home/kaappo/git/drone/src/BitMatrix.cpp"
+  "sketchLocation": "/home/kaappo/git/drone/toimivaimu/toimivaimu.ino"
 }

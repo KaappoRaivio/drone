@@ -1,8 +1,9 @@
-# 1 "/home/kaappo/git/drone/toimivaimu/toimivaimu.ino"
-# 2 "/home/kaappo/git/drone/toimivaimu/toimivaimu.ino" 2
-# 3 "/home/kaappo/git/drone/toimivaimu/toimivaimu.ino" 2
+#include <Arduino.h>
+#line 1 "/home/kaappo/git/drone/toimivaimu/toimivaimu.ino"
+#include "I2Cdev.h"
+#include "MPU6050_6Axis_MotionApps20.h"
 
-# 5 "/home/kaappo/git/drone/toimivaimu/toimivaimu.ino" 2
+#include "Wire.h"
 /*#include "I2Cdev.h"
 #include "MPU6050_6Axis_MotionApps20.h"*/
 
@@ -31,11 +32,7 @@ class EasyIMU {
 EasyIMU::EasyIMU() {}
 
 void EasyIMU::init() {
-  
-# 33 "/home/kaappo/git/drone/toimivaimu/toimivaimu.ino" 3
- (*(volatile uint8_t *)(0xB8)) 
-# 33 "/home/kaappo/git/drone/toimivaimu/toimivaimu.ino"
-      = 24;
+  TWBR = 24;
   //Wire.setTimeout(24);
   mpu.initialize();
   mpu.dmpInitialize();
@@ -59,21 +56,13 @@ bool EasyIMU::isNewDataAvailable() {
   fifoCount = mpu.getFIFOCount();
   if (fifoCount == 1024) {
     mpu.resetFIFO();
-    Serial.println((reinterpret_cast<const __FlashStringHelper *>(
-# 57 "/home/kaappo/git/drone/toimivaimu/toimivaimu.ino" 3
-                  (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 57 "/home/kaappo/git/drone/toimivaimu/toimivaimu.ino"
-                  "FIFO overflow!"
-# 57 "/home/kaappo/git/drone/toimivaimu/toimivaimu.ino" 3
-                  ); &__c[0];}))
-# 57 "/home/kaappo/git/drone/toimivaimu/toimivaimu.ino"
-                  )));
+    Serial.println(F("FIFO overflow!"));
     return false;
   } else if (fifoCount >= packetSize) {
       if (fifoCount % packetSize != 0) {
         mpu.resetFIFO();
       }
-
+      
       return true;
   } else {
     return false;
@@ -95,6 +84,11 @@ float *EasyIMU::getNewData() {
 
 EasyIMU imu;
 
+#line 85 "/home/kaappo/git/drone/toimivaimu/toimivaimu.ino"
+void setup();
+#line 94 "/home/kaappo/git/drone/toimivaimu/toimivaimu.ino"
+void loop();
+#line 85 "/home/kaappo/git/drone/toimivaimu/toimivaimu.ino"
 void setup() {
   Wire.begin();
   Serial.begin(115200);
@@ -110,11 +104,12 @@ void loop() {
     ypr = imu.getNewData();
 
     Serial.print("ypr\t");
-    Serial.print(ypr[0] * 180 / 3.1415926535897932384626433832795);
+    Serial.print(ypr[0] * 180 / PI);
     Serial.print("\t");
-    Serial.print(ypr[1] * 180 / 3.1415926535897932384626433832795);
+    Serial.print(ypr[1] * 180 / PI);
     Serial.print("\t");
-    Serial.print(ypr[2] * 180 / 3.1415926535897932384626433832795);
+    Serial.print(ypr[2] * 180 / PI);
     Serial.println("\t");
   }
 }
+

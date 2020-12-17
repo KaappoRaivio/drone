@@ -1,6 +1,6 @@
-/home/kaappo/git/drone/build/sketch/MySerialReader.cpp.o: \
- /home/kaappo/git/drone/build/sketch/MySerialReader.cpp \
- /home/kaappo/git/drone/build/sketch/MySerialReader.h \
+/home/kaappo/git/drone/build/libraries/I2Cdev/I2Cdev.cpp.o: \
+ /home/kaappo/Arduino/libraries/I2Cdev/I2Cdev.cpp \
+ /home/kaappo/Arduino/libraries/I2Cdev/I2Cdev.h \
  /home/kaappo/Downloads/arduino-1.8.13/hardware/arduino/avr/cores/arduino/Arduino.h \
  /home/kaappo/Downloads/arduino-1.8.13/hardware/arduino/avr/cores/arduino/binary.h \
  /home/kaappo/Downloads/arduino-1.8.13/hardware/arduino/avr/cores/arduino/WCharacter.h \
@@ -11,4 +11,6 @@
  /home/kaappo/Downloads/arduino-1.8.13/hardware/arduino/avr/cores/arduino/Printable.h \
  /home/kaappo/Downloads/arduino-1.8.13/hardware/arduino/avr/cores/arduino/USBAPI.h \
  /home/kaappo/Downloads/arduino-1.8.13/hardware/arduino/avr/cores/arduino/Arduino.h \
- /home/kaappo/Downloads/arduino-1.8.13/hardware/arduino/avr/variants/standard/pins_arduino.h
+ /home/kaappo/Downloads/arduino-1.8.13/hardware/arduino/avr/variants/standard/pins_arduino.h \
+ /home/kaappo/Downloads/arduino-1.8.13/hardware/arduino/avr/libraries/Wire/src/Wire.h \
+ /home/kaappo/Downloads/arduino-1.8.13/hardware/arduino/avr/cores/arduino/Stream.h
