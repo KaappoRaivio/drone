@@ -3,5 +3,5 @@
     "board": "arduino:avr:uno",
     "output": "./build",
     "port": "/dev/ttyACM0",
-    "sketch": "toimivaimu/toimivaimu.ino"
+    "sketch": "src/main.ino"
 }

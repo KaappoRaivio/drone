@@ -1,33 +1,43 @@
 import time
 import serial
-ser = serial.Serial('/dev/ttyACM0', 500000) # Establish the connection on a specific port
 
-# while True:
-#     ser.write(input("Your input: ").encode())
-#     print("<Reading now>")
-#     print(ser.readline().decode("ascii"))
+import packet
+
+ser = serial.Serial('/dev/ttyACM0', 500000)
+time.sleep(3)
 
 ser.flush()
-# ser.write("Moi\n".encode("ascii"))
-# ser.write("Moi\n".encode("ascii"))
-# ser.write("Moi\n".encode("ascii"))
-# ser.write("Moi\n".encode("ascii"))
-# ser.write("Moi\n".encode("ascii"))
-# print(ser.readline().strip().decode("ascii"))
-# print("listening")
 a = 0
+
+print("Start")
+
+buffers = [[0 for i in range(20)] for a in range(3)]
+
+def average(l):
+    return sum(l) / len(l)
+
 while True:
-    # enc = (int(input())).to_bytes(2, "little")
-    # enc = (3456).to_bytes(2, "little")
-    # enc = bytes([13, 4,   4, 0, 5, 0, ])
-    enc = bytes([12, 4,   4, 0, 5, 0,   13, 4,   4, 0, 5, 0, ])
-    # enc = "AB".encode("ascii")
-    # print(list(enc))
+    # print(a, " ", end="", flush=True)
+    a += 1
+
+    enc = packet.make_packet(packet.COMMAND_GET_BATTERY_VOLTAGES, ())
     ser.write(enc)
     ser.flush()
-    a += 1
-    # print("gettling line")
-    print(a)
+    
+    line = ser.readline().strip().decode("ascii")
+    
+    # print(line)
+    # print(buffers)
+    if a > 100:
+        values = line.split(" ")
+        
+        for buffer in buffers:
+            buffer.pop()
+        
+        for i in range(3):
+            buffers[i].insert(0, float(values[i]))
+            
+        
+        print(*[f"{average(l):.2f}" for l in buffers], sep=", ")
     time.sleep(0.05)
-    if ser.inWaiting():
-        print(ser.read(ser.inWaiting()).strip().decode("ascii"))
+
