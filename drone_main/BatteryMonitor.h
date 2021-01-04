@@ -13,10 +13,10 @@ class BatteryMonitor {
 
     public:
         float* getVoltages ();
-        BatteryMonitor(byte* pins, float* coeffs);
+        BatteryMonitor(const byte* pins, const float* coeffs);
 };
 
-BatteryMonitor::BatteryMonitor (byte* pins, float* coeffs) {
+BatteryMonitor::BatteryMonitor (const byte* pins, const float* coeffs) {
     for (int i = 0; i < AMOUNT_OF_CELLS; i++) {
         this->pins[i] = pins[i];
         this->coeffs[i] = coeffs[i];
@@ -28,6 +28,7 @@ BatteryMonitor::BatteryMonitor (byte* pins, float* coeffs) {
 void BatteryMonitor::init () {
     for (int i = 0; i < AMOUNT_OF_CELLS; i++) {
         pinMode(pins[i], INPUT);
+        digitalWrite(pins[i], HIGH);
     }
 }
 

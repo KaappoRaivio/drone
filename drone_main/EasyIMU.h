@@ -1,7 +1,10 @@
 #ifndef MY_EASYIMU_H
 #define MY_EASYIMU_H
 
+// #define MPU6050_DMP_FIFO_RATE_DIVISOR 0x02
+
 #include "MPU6050_6Axis_MotionApps20.h"
+#include "EasyIntegral.h"
 
 #define YAW 0
 #define PITCH 1
@@ -20,15 +23,19 @@ private:
     uint16_t fifoCount;
     uint8_t fifoBuffer[64];
 
-    Quaternion q;
+    Quaternion quaternion;
     VectorFloat gravity;
     VectorInt16 gyro;
 
     float ypr[3];
     float my_ypr[3];
 
-    // float ypr_offsets[3] = {0.25, -0.08, 1.0};
     float ypr_offsets[3] = {0.0, 0.0, 0.0};
+    float zAccelOffset = 0;
+    float zAccel = 0;
+    
+    EasyIntegral verticalSpeedIntegral;
+    EasyIntegral heightIntegral;
 
 public:
     EasyIMU();
@@ -37,6 +44,7 @@ public:
     float *getNewData();
 
     void zeroAxes ();
+    void printIMU ();
 };
 
 EasyIMU::EasyIMU() {}
@@ -45,8 +53,8 @@ void EasyIMU::init() {
     TWBR = 24;
     mpu.initialize();
     mpu.dmpInitialize();
-    // mpu.CalibrateAccel(10);
-    // mpu.CalibrateGyro(10);
+    mpu.CalibrateAccel(10);
+    mpu.CalibrateGyro(10);
     mpu.PrintActiveOffsets();
     mpu.setDMPEnabled(true);
 
@@ -87,13 +95,20 @@ float *EasyIMU::getNewData() {
         fifoCount -= packetSize;
     }
 
-    mpu.dmpGetQuaternion(&q, fifoBuffer);
-    mpu.dmpGetGravity(&gravity, &q);
-    mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
+    mpu.dmpGetQuaternion(&quaternion, fifoBuffer);
+    mpu.dmpGetGravity(&gravity, &quaternion);
+    mpu.dmpGetYawPitchRoll(ypr, &quaternion, &gravity);
 
     for (int i = 0; i < 3; i++) {
         my_ypr[i] = ypr_offsets[i] + ypr[i];
     }
+
+    zAccel = ((sin(my_ypr[ROLL]) * mpu.getAccelerationY()
+        + sin(my_ypr[PITCH]) * mpu.getAccelerationX()
+        + cos(my_ypr[PITCH]) * cos(my_ypr[ROLL]) * mpu.getAccelerationZ()) / 16384.0 - 1.) * 9.81 + zAccelOffset;
+    // zAccel = cos(my_ypr[PITCH]) * cos(my_ypr[ROLL]) * mpu.getAccelerationZ() / 16384.0;
+    verticalSpeedIntegral.add(zAccel);
+    heightIntegral.add(verticalSpeedIntegral.get());
 
     return my_ypr;
 }
@@ -102,6 +117,48 @@ void EasyIMU::zeroAxes() {
     for (int i = 0; i < 3; i++) {
         ypr_offsets[i] = -ypr[i];
     }
+
+    zAccelOffset = -zAccel;
+
+    verticalSpeedIntegral.reset();
+    heightIntegral.reset();
+}
+
+void EasyIMU::printIMU () {
+    // Serial.print(F("Euler angles\t"));
+    Serial.print(my_ypr[YAW] * 180 / PI);
+    Serial.print(F("\t"));
+    Serial.print(my_ypr[PITCH] * 180 / PI);
+    Serial.print(F("\t"));
+    Serial.print(my_ypr[ROLL] * 180 / PI);
+    Serial.print(F("\t"));
+    Serial.print(F("\t"));
+
+
+    
+        
+
+    // Serial.print(my_ypr[])
+    Serial.print(zAccel);
+    // Serial.print(F("\t"));
+    // Serial.print(quaternion.y);
+    // Serial.print(F("\t"));
+    // Serial.print(quaternion.z);
+    // Serial.print(F("\t"));
+    // Serial.print(quaternion.w);
+    Serial.print(F("\t"));
+    Serial.print(F("\t"));
+    Serial.print(verticalSpeedIntegral.get());
+    Serial.print(F("\t"));
+    Serial.println(heightIntegral.get());
+
+    // Serial.println(F("\t"));
+    
+
+    // float x = mpu.getAccelerationX() / 16384.0;
+    // float y = mpu.getAccelerationY() / 16384.0;
+
+    // Serial.println(squaternionrt(x * x + y * y + z * z));
 }
 
 #endif
