@@ -60,9 +60,7 @@ class ControllerInputSupplier:
 
         
 
-        self.__state_before_A = False   # Used for
-        self.__state_before_B = False   # edge
-        self.__state_before_Y = False   # detection
+        self.__state_before_buttons = (False, False, False, False)  
         self.__state_before_pad = (False, False, False, False)
 
         self.first_time = True
@@ -101,6 +99,21 @@ class ControllerInputSupplier:
         #print(f"{math.degrees(angle):8.2f}, {old_x:6.2f}, {old_y:6.2f}")
         return length * math.cos(angle), length * math.sin(angle)
 
+    def getButtonsDown(self):
+        buttons = self.controller.get_buttons()
+
+        res = [buttons[i] and not self.__state_before_buttons[i] for i in range(4)]
+        self.__state_before_buttons = buttons
+        try:
+            return res.index(True)
+        except:
+            return -1
+
+    output = [
+        (0, 50, 50, 0),
+        (0, -50, 50, 0),
+    ]
+
     def getInput(self):
         pygame.event.pump()
 
@@ -117,7 +130,12 @@ class ControllerInputSupplier:
 
         scale = 300
 
-        return tuple(map(lambda x: min(2 * scale, max(0, int(x * scale + scale))), (collective, pitch, roll, yaw,)))
+        down = self.getButtonsDown()
+        
+
+        
+
+        return scale, *tuple(map(lambda x: min(2 * scale, max(0, int(x * scale + scale))), (collective * 0.8 + 0.2, pitch, roll, yaw,)))
 
     def stop(self):
         return False

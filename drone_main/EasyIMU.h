@@ -2,9 +2,12 @@
 #define MY_EASYIMU_H
 
 // #define MPU6050_DMP_FIFO_RATE_DIVISOR 0x02
+#define DEBUG_PRINTLN(a) Serial.println(a)
 
 #include "MPU6050_6Axis_MotionApps20.h"
 #include "EasyIntegral.h"
+
+#include "Handler.h"
 
 #define YAW 0
 #define PITCH 1
@@ -47,6 +50,8 @@ public:
     void printIMU ();
 };
 
+EasyIMU imu;
+
 EasyIMU::EasyIMU() {}
 
 void EasyIMU::init() {
@@ -56,10 +61,13 @@ void EasyIMU::init() {
     mpu.CalibrateAccel(10);
     mpu.CalibrateGyro(10);
     mpu.PrintActiveOffsets();
+    Serial.println(F("Enabling dmp"));
     mpu.setDMPEnabled(true);
+    Serial.println(F("Enabled dmp"));
 
     packetSize = mpu.dmpGetFIFOPacketSize();
     fifoCount = mpu.getFIFOCount();
+    Serial.println(F("Got fifo params"));
 
     // board-specific values
     /*mpu.setXAccelOffset(-3952);
@@ -130,27 +138,27 @@ void EasyIMU::printIMU () {
     Serial.print(F("\t"));
     Serial.print(my_ypr[PITCH] * 180 / PI);
     Serial.print(F("\t"));
-    Serial.print(my_ypr[ROLL] * 180 / PI);
-    Serial.print(F("\t"));
-    Serial.print(F("\t"));
+    Serial.println(my_ypr[ROLL] * 180 / PI);
+    // Serial.print(F("\t"));
+    // Serial.print(F("\t"));
 
 
     
         
 
     // Serial.print(my_ypr[])
-    Serial.print(zAccel);
+    // Serial.print(zAccel);
     // Serial.print(F("\t"));
     // Serial.print(quaternion.y);
     // Serial.print(F("\t"));
     // Serial.print(quaternion.z);
     // Serial.print(F("\t"));
     // Serial.print(quaternion.w);
-    Serial.print(F("\t"));
-    Serial.print(F("\t"));
-    Serial.print(verticalSpeedIntegral.get());
-    Serial.print(F("\t"));
-    Serial.println(heightIntegral.get());
+    // Serial.print(F("\t"));
+    // Serial.print(F("\t"));
+    // Serial.print(verticalSpeedIntegral.get());
+    // Serial.print(F("\t"));
+    // Serial.println(heightIntegral.get());
 
     // Serial.println(F("\t"));
     
@@ -159,6 +167,15 @@ void EasyIMU::printIMU () {
     // float y = mpu.getAccelerationY() / 16384.0;
 
     // Serial.println(squaternionrt(x * x + y * y + z * z));
+}
+
+void handleIMUCommand(byte amountOfParams) {
+    int command = readInt();
+    if (command == 0) {
+        imu.printIMU();
+    } else if (command == 1) {
+        imu.zeroAxes();
+    }
 }
 
 #endif

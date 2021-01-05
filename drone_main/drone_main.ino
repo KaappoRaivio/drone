@@ -1,106 +1,89 @@
+#include "I2Cdev.h"
+#include "Wire.h"
+
 #include "EasyIMU.h"
 #include "CommandDispatcher.h"
 #include "Handler.h"
 #include "BatteryMonitor.h"
 #include "MotorGroup.h"
 #include "MyPID.h"
+#include "Mode.h"
 
-#include "I2Cdev.h"
-#include "Wire.h"
 
-EasyIMU imu;
 CommandDispatcher dispatcher;
 
-const byte cellPins[AMOUNT_OF_CELLS] = {A0, A1, A2};
-const float cellCoeffs[AMOUNT_OF_CELLS] = {1.0, 0.36, 0.36};
-BatteryMonitor monitor(cellPins, cellCoeffs);
+MotorGroup motorGroup(3, 6, 11, 9);
+MyPID PID_pitch(600, 200, 800);
+MyPID PID_roll(600, 200, 800);
+MyPID PID_yaw(0, 0, 0);
 
+float target_pitch = 0;
+float target_roll = 0.0;
+float target_yaw = 0.0;
+float target_collective = 0;
 
+#define STATE_NOT_ARMED 0
+#define STATE_ARMED 1
+
+int state = STATE_NOT_ARMED;
 
 void setup() {
     Wire.begin();
     Serial.begin(500000);
-    imu.init();
+    imu.init();   // TODO: move to a place that makes more sense
 }
-
-byte counter = 0;
-float *eulerAngles;
-
-void handleIMUCommand (byte amountOfParams) {
-    int command = readInt();
-    if (command == 0) {
-        imu.printIMU();
-    } else if (command == 1) {
-        imu.zeroAxes();
-    }
-}
-
-void getBatteryVoltages (byte amountOfParams) {
-    float* voltages = monitor.getVoltages();
-
-    for (int i = 0; i < AMOUNT_OF_CELLS; i++) {
-        Serial.print(voltages[i]);
-        Serial.print(" ");
-    }
-    Serial.println();
-}
-
-MotorGroup motorGroup((uint8_t)3, (uint8_t)6, (uint8_t)11, (uint8_t)9);
 
 void armESC (byte amountOfParams) {
     motorGroup.arm();
+    state = STATE_ARMED;
 }
 
-int scale = 300;
 
 void manualControl (byte amountOfParams) {
+    int scale = readInt();
     int collective = readInt() - scale;
     int pitch = readInt() - scale;
     int roll = readInt() - scale;
     int yaw = readInt() - scale;
-    
-    Serial.print(collective);
-    Serial.print(" ");
-    Serial.print(pitch);
-    Serial.print(" ");
-    Serial.print(roll);
-    Serial.print(" ");
-    Serial.println(yaw);
-
-    motorGroup.setValues(collective, pitch, roll, yaw);
+    target_collective = collective;
 }
 
-Handler handlers[4] = {
+void disarmESC (byte amountOfParams) {
+    motorGroup.stop();
+}
+
+Handler handlers[6] = {
     handleIMUCommand,
     getBatteryVoltages,
     armESC,
-    manualControl
+    manualControl,
+    disarmESC,
+    printMode
 };
 
-MyPID PID_pitch (1, 1, 1);
-MyPID PID_roll (1, 1, 1);
-MyPID PID_yaw (1, 1, 1);
-
-float target_pitch = 0.0;
-float target_roll = 0.0;
-float target_yaw = 0.0;
+float* eulerAngles;
 
 void loop() {
     if (imu.isNewDataAvailable()) {
         eulerAngles = imu.getNewData();
-        // imu.printIMU();
+
+        if (state == STATE_ARMED) {
+            PID_pitch.update(target_pitch - eulerAngles[ROLL]);
+            PID_roll.update(target_roll - eulerAngles[PITCH]);
+
+            float adjustment_pitch = PID_pitch.getAdjustment();
+            float adjustment_roll = PID_roll.getAdjustment();
+
+            motorGroup.setValues(target_collective, adjustment_pitch, adjustment_roll, 0);
+        }
     }
-    delay(10);
 
     byte command = dispatcher.getNextCommand();
-    // Serial.println(command);
-    // byte command = 255;
     if (command != NO_COMMAND) {
         byte amountOfParams = dispatcher.getAmountOfParamBytes();
         handlers[command](amountOfParams);
-    } else {
-        // Serial.println(F("No command"));
     }
 
     motorGroup.tick();
+    delay(10);
 }

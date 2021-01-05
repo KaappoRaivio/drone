@@ -14,6 +14,7 @@ class MotorGroup {
         MotorGroup(uint8_t pin1, uint8_t pin2, uint8_t pin3, uint8_t pin4);
         void arm ();
         void tick ();
+        void stop ();
 
         void setValues (int collective, int pitch, int roll, int yaw);
 };
@@ -24,6 +25,13 @@ MotorGroup::MotorGroup (uint8_t pin1, uint8_t pin2, uint8_t pin3, uint8_t pin4) 
     controller3{pin3}, 
     controller4{pin4} {
 
+}
+
+void MotorGroup::stop () {
+    controller1.stop();
+    controller2.stop();
+    controller3.stop();
+    controller4.stop();
 }
 
 void MotorGroup::arm () {

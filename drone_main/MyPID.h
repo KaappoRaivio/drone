@@ -23,16 +23,30 @@ class MyPID {
 
 MyPID::MyPID (float kP, float kI, float kD) {
     time_previous = millis();
+
+    this->kP = kP;
+    this->kI = kI;
+    this->kD = kD;
 }
 
 void MyPID::update (float eP_new) {
     long time = millis();
-    long deltaTime = (time - time_previous) / 1000;
+    float deltaTime = max((time - time_previous) / 1000, 0.01);
     time_previous = time;
+
+    // Serial.println(deltaTime);
     
     eP = eP_new;
     eI += eP * deltaTime;
     eD = (eP - eP_previous) / deltaTime;
+    // eD = 0;
+
+    // Serial.print(eP);
+    // Serial.print(" ");
+    // Serial.print(eI);
+    // Serial.print(" ");
+    // Serial.print(eD);
+    // Serial.println(" ");
 
     eP_previous = eP;
 }

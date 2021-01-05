@@ -21,6 +21,7 @@ class MotorController {
         void arm();
         void setSpeed(uint16_t newSpeed);
         void tick ();
+        void stop ();
 };
 
 MotorController::MotorController (uint8_t pin) : esc{pin, 1000, 2000, 500} {
@@ -41,7 +42,7 @@ void MotorController::arm() {
 
     // esc.speed(0);
     esc.speed(ARM_MIN);
-    // delay(10);
+    // delay(200);
     // esc.speed(ARM_MAX);
     // delay(10);
     // esc.speed(ARM_MIN);
@@ -63,6 +64,9 @@ void MotorController::tick() {
     esc.speed(current);
 }
 
+void MotorController::stop () {
+    esc.stop();
+}
 /*
 ESC myESC(9, 1000, 2000, 500);  // ESC_Name (ESC PIN, Minimum Value, Maximum Value, Default Speed, Arm Value)
 int oESC;

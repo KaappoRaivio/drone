@@ -16,6 +16,10 @@ class BatteryMonitor {
         BatteryMonitor(const byte* pins, const float* coeffs);
 };
 
+const byte cellPins[AMOUNT_OF_CELLS] = {A0, A1, A2};
+const float cellCoeffs[AMOUNT_OF_CELLS] = {1.0, 0.36, 0.36};
+BatteryMonitor monitor(cellPins, cellCoeffs);
+
 BatteryMonitor::BatteryMonitor (const byte* pins, const float* coeffs) {
     for (int i = 0; i < AMOUNT_OF_CELLS; i++) {
         this->pins[i] = pins[i];
@@ -41,6 +45,16 @@ float* BatteryMonitor::getVoltages () {
     }
 
     return voltages;
+}
+
+void getBatteryVoltages(byte amountOfParams) {
+    float* voltages = monitor.getVoltages();
+
+    for (int i = 0; i < AMOUNT_OF_CELLS; i++) {
+        Serial.print(voltages[i]);
+        Serial.print(" ");
+    }
+    Serial.println();
 }
 
 #endif
