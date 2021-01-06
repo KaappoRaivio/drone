@@ -123,7 +123,7 @@ void loop() {
         eulerAngles = imu.getNewData();
 
         if (STATUS == STATUS_READY_FOR_FLIGHT && MODE == MODE_STABILIZED_CONTROL) {
-            PID_pitch.update(target_pitch - eulerAngles[ROLL]);
+            PID_pitch.update(target_pitch - eulerAngles[ROLL]);   // Imu is mounted such that the "IMU roll" is "craft pitch" and vice versa.
             PID_roll.update(target_roll - eulerAngles[PITCH]);
 
             float adjustment_pitch = PID_pitch.getAdjustment();
@@ -140,5 +140,5 @@ void loop() {
     }
 
     motorGroup.tick();
-    delay(10);
+    // delay(10);
 }

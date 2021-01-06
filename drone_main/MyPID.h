@@ -55,7 +55,8 @@ void MyPID::update (float eP_new) {
 }
 
 float MyPID::getAdjustment () {
-    return (eP * kP 
+    return (
+          eP * kP 
         + eI * kI
         + eD * kD) / 3.0;
 }
