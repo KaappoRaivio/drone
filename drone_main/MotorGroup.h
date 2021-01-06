@@ -17,6 +17,7 @@ class MotorGroup {
         void stop ();
 
         void setValues (int collective, int pitch, int roll, int yaw);
+        void setValuesRaw (int s1, int s2, int s3, int s4);
 };
 
 MotorGroup::MotorGroup (uint8_t pin1, uint8_t pin2, uint8_t pin3, uint8_t pin4) : 
@@ -65,10 +66,14 @@ void MotorGroup::setValues(int collective, int pitch, int roll, int yaw) {
     int speed3 = collective - roll + pitch - yaw;
     int speed4 = collective - roll - pitch + yaw;
 
-    controller1.setSpeed(speed1);
-    controller2.setSpeed(speed2);
-    controller3.setSpeed(speed3);
-    controller4.setSpeed(speed4);
+    setValuesRaw(speed1, speed2, speed3, speed4);
+}
+
+void MotorGroup::setValuesRaw (int s1, int s2, int s3, int s4) {
+    controller1.setSpeed(s1);
+    controller2.setSpeed(s2);
+    controller3.setSpeed(s3);
+    controller4.setSpeed(s4);
 }
 
 #endif

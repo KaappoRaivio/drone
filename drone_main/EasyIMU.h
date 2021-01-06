@@ -61,23 +61,10 @@ void EasyIMU::init() {
     mpu.CalibrateAccel(10);
     mpu.CalibrateGyro(10);
     mpu.PrintActiveOffsets();
-    Serial.println(F("Enabling dmp"));
     mpu.setDMPEnabled(true);
-    Serial.println(F("Enabled dmp"));
 
     packetSize = mpu.dmpGetFIFOPacketSize();
     fifoCount = mpu.getFIFOCount();
-    Serial.println(F("Got fifo params"));
-
-    // board-specific values
-    /*mpu.setXAccelOffset(-3952);
-    mpu.setYAccelOffset(1733);
-    mpu.setZAccelOffset(1655);
-    mpu.setXGyroOffset(-100);
-    mpu.setYGyroOffset(-13);
-    mpu.setZGyroOffset(58);*/
-
-    
 }
 
 bool EasyIMU::isNewDataAvailable() {

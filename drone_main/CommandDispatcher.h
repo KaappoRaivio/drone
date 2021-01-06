@@ -2,13 +2,8 @@
 #define MY_COMMANDDISPATCHER_H
 
 #define NO_COMMAND 255
-
-enum Command {
-    ADD = 0,
-    MULTIPLY = 1
-};
-
-#define Command enum Command
+#define POSTAMBLE '.'
+#define PREAMBLE 'C'
 
 const byte IN_WAITING = 0;
 const byte IN_TRANSIT = 1;
@@ -19,6 +14,7 @@ class CommandDispatcher {
         byte state = IN_WAITING;
         byte command;
         byte nextMessageLength;
+        byte supposedPreamble;
     public:
         CommandDispatcher ();
         byte getNextCommand ();
@@ -27,11 +23,23 @@ class CommandDispatcher {
 
 CommandDispatcher::CommandDispatcher () {}
 byte CommandDispatcher::getNextCommand () {
+    bool expectPostAmble = false;
     if (state == READY) {
         state = IN_WAITING;
+        expectPostAmble = true;
     }
 
-    if (state == IN_WAITING && Serial.available() >= 2) {
+    if (expectPostAmble) {
+        if (Serial.available() >= 1 && Serial.read() != POSTAMBLE) {
+            Serial.println(F("No POSTAMBLE!!!"));
+        }
+    }
+
+    if (state == IN_WAITING && Serial.available() >= 3) {
+        supposedPreamble = Serial.read();
+        if (supposedPreamble != PREAMBLE) {
+            Serial.println(F("No preamble!!!"));
+        }
         nextMessageLength = Serial.read();
         command = Serial.read();
         state = IN_TRANSIT;

@@ -7,8 +7,8 @@
 #define ARM_MAX 1500
 
 #define MIN_LIMIT 1000
-#define MAX_LIMIT 1300
-#define ALLOWED_STEP 4
+#define MAX_LIMIT 1750
+#define ALLOWED_STEP 250
 
 class MotorController {
     private: 
@@ -67,41 +67,5 @@ void MotorController::tick() {
 void MotorController::stop () {
     esc.stop();
 }
-/*
-ESC myESC(9, 1000, 2000, 500);  // ESC_Name (ESC PIN, Minimum Value, Maximum Value, Default Speed, Arm Value)
-int oESC;
 
-void setup() {
-    Serial.begin(9600);
-    Serial.println(F("Started arming"));
-    myESC.arm();
-
-    for (oESC = ARM_MIN; oESC <= ARM_MAX; oESC += 10) {
-        myESC.speed(oESC);
-        delay(10);
-    }
-
-    for (oESC = ARM_MAX; oESC > ARM_MIN; oESC -= 10) {
-        myESC.speed(oESC);
-        delay(10);
-    }
-    delay(7000);
-
-    myESC.speed(1150);
-    Serial.println(F("Done"));
-}
-
-void loop() {
-    while (!Serial.available()) {
-    }
-    int read = Serial.parseInt();
-    delay(100);
-    Serial.read();
-    myESC.speed(read);
-    Serial.print(F("Speed now: "));
-    Serial.println(read);
-
-    delay(2000);
-}
-*/
 #endif

@@ -1,9 +1,9 @@
 import pygame
 import listener
 import xbox360
+import packet
 
 import math,time
-
 #
 # pygame.joystick.init()
 pygame.init()
@@ -65,6 +65,7 @@ class ControllerInputSupplier:
 
         self.first_time = True
 
+        self.collective = 0
 
     @staticmethod
     def length(radians):
@@ -100,10 +101,10 @@ class ControllerInputSupplier:
         return length * math.cos(angle), length * math.sin(angle)
 
     def getButtonsDown(self):
-        buttons = self.controller.get_buttons()
+        res = self.controller.get_buttons()
 
-        res = [buttons[i] and not self.__state_before_buttons[i] for i in range(4)]
-        self.__state_before_buttons = buttons
+        res = [res[i] and not self.__state_before_buttons[i] for i in range(4)]
+        self.__state_before_buttons = res
         try:
             return res.index(True)
         except:
@@ -114,7 +115,7 @@ class ControllerInputSupplier:
         (0, -50, 50, 0),
     ]
 
-    def getInput(self):
+    def getInput(self, debug=False):
         pygame.event.pump()
 
         # if self.first_time:
@@ -124,18 +125,31 @@ class ControllerInputSupplier:
         roll, pitch, = self.transform_stick(self.controller.get_left_stick())
         yaw, _ = self.transform_stick(self.controller.get_right_stick())
 
-        collective = self.controller.get_triggers()
+        self.collective += self.controller.get_triggers() * 10
 
-        print(f"{collective:6.2f} {pitch:6.2f} {roll:6.2f} {yaw:6.2f}")
+        print(f"{self.collective:6.2f} {pitch:6.2f} {roll:6.2f} {yaw:6.2f}")
 
-        scale = 300
+        scale = 750
 
         down = self.getButtonsDown()
         
+        if down == 0:
+            
+            while len((new_pid := input("Enter new pid values: [axis] [p] [i] [d]").split(" "))) != 4:
+                pass
+            
+            return packet.make_packet(packet.COMMAND_PID, tuple(map(int, new_pid)))
+        elif down == 1:
+            return packet.make_packet(packet.COMMAND_RESETI, ())
 
-        
 
-        return scale, *tuple(map(lambda x: min(2 * scale, max(0, int(x * scale + scale))), (collective * 0.8 + 0.2, pitch, roll, yaw,)))
+        p = packet.make_packet(packet.COMMAND_MANUAL_CONTROL, (scale, *tuple(map(lambda x: min(2 * scale, max(0, int(
+            x * scale + scale))), (self.collective * 0.8 + 0.2, pitch / scale * 30, roll / scale * 30, yaw / scale * 200,)))))
+
+        if down == 2:
+            p += packet.make_packet(packet.COMMAND_GET_BATTERY_VOLTAGES, ())
+
+        return p
 
     def stop(self):
         return False
@@ -148,5 +162,5 @@ if __name__ == "__main__":
     supplier = getSupplier()
 
     while True:
-        print(supplier.getInput())
+        print(supplier.getInput(True))
         time.sleep(0.02)

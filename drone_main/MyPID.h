@@ -19,6 +19,8 @@ class MyPID {
         void update (float eP);
         float getAdjustment ();
         MyPID (float kP, float kI, float kD);
+        void setParams (float kP, float kI, float kD);
+        void resetI ();
 };
 
 MyPID::MyPID (float kP, float kI, float kD) {
@@ -31,7 +33,8 @@ MyPID::MyPID (float kP, float kI, float kD) {
 
 void MyPID::update (float eP_new) {
     long time = millis();
-    float deltaTime = max((time - time_previous) / 1000, 0.01);
+    float deltaTime = max((time - time_previous) / 1000.0, 0.00001);
+    Serial.println(deltaTime, 8);
     time_previous = time;
 
     // Serial.println(deltaTime);
@@ -55,6 +58,18 @@ float MyPID::getAdjustment () {
     return (eP * kP 
         + eI * kI
         + eD * kD) / 3.0;
+}
+
+void MyPID::setParams (float kP, float kI, float kD) {
+    this->kP = kP;
+    this->kI = kI;
+    this->kD = kD;
+
+    resetI();   // usually we want to reset the integral error as its effect is dependent on the gains.
+}
+
+void MyPID::resetI () {
+    eI = 0;
 }
 
 #endif
