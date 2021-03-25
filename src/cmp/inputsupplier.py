@@ -144,7 +144,7 @@ class ControllerInputSupplier:
 
 
         p = packet.make_packet(packet.COMMAND_MANUAL_CONTROL, (scale, *tuple(map(lambda x: min(2 * scale, max(0, int(
-            x * scale + scale))), (self.collective * 0.8 + 0.2, pitch / scale * 30, roll / scale * 30, yaw / scale * 200,)))))
+            x * scale + scale))), (self.collective / scale * 0.8 + 0.2, pitch / scale * 30, roll / scale * 30, yaw / scale * 200,)))))
 
         if down == 2:
             p += packet.make_packet(packet.COMMAND_GET_BATTERY_VOLTAGES, ())

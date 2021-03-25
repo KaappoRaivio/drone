@@ -47,7 +47,7 @@ float* BatteryMonitor::getVoltages () {
     return voltages;
 }
 
-void getBatteryVoltages(byte amountOfParams) {
+void printBatteryVoltages() {
     float* voltages = monitor.getVoltages();
 
     for (int i = 0; i < AMOUNT_OF_CELLS; i++) {

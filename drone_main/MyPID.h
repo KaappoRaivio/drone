@@ -20,6 +20,7 @@ class MyPID {
         float getAdjustment ();
         MyPID (float kP, float kI, float kD);
         void setParams (float kP, float kI, float kD);
+        void printSelf ();
         void resetI ();
 };
 
@@ -71,6 +72,22 @@ void MyPID::setParams (float kP, float kI, float kD) {
 
 void MyPID::resetI () {
     eI = 0;
+}
+
+void MyPID::printSelf () {
+    Serial.print(kP);
+    Serial.print("\t");
+    Serial.print(kI);
+    Serial.print("\t");
+    Serial.print(kD);
+    Serial.print("\t");
+    Serial.print(eP);
+    Serial.print("\t");
+    Serial.print(eI);
+    Serial.print("\t");
+    Serial.print(eD);
+    Serial.print("\t");
+    Serial.println(getAdjustment());
 }
 
 #endif
